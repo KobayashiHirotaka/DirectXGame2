@@ -12,6 +12,8 @@ void Player::Initialize(const std::vector<Model*>& models)
 	weapon_->Initialize(models_[1]);
 	weapon_->SetParent(&worldTransform_);
 
+	behaviorDashTime_ = 15;
+
 	SetCollisionAttribute(kCollisionAttributePlayer);
 	SetCollisionMask(kCollisionMaskPlayer);
 	SetCollisionPrimitive(kCollisionPrimitiveAABB);
@@ -92,10 +94,10 @@ void Player::Update()
 		worldTransform_.translation.y = 1.0f;
 	}
 
-	if (worldTransform_.translation.y <= -4.0f)
+	/*if (worldTransform_.translation.y <= -4.0f)
 	{
 		worldTransform_.translation = { 0.0f,0.0f,0.0f };
-	}
+	}*/
 
 	ICharacter::Update();
 
@@ -139,14 +141,14 @@ void Player::OnCollision(Collider* collider)
 		}
 	}
 
-	if (collider->GetCollisionAttribute() & kCollisionAttributeEnemy && reStart_ == false)
+	/*if (collider->GetCollisionAttribute() & kCollisionAttributeEnemy && reStart_ == false)
 	{
 		Restart();
-	}
+	}*/
 
 	if (collider->GetCollisionAttribute() & kCollisionAttributeGoal && reStart_ == false)
 	{
-		Restart();
+		behaviorDashTime_ = 100;
 	}
 }
 
@@ -166,55 +168,11 @@ void Player::BehaviorRootInitialize()
 
 void Player::BehaviorRootUpdate()
 {
-	if (workDrift_.coolTime != 60)
-	{
-		workDrift_.coolTime++;
-	}
-
 	if (joyState_.Gamepad.wButtons & XINPUT_GAMEPAD_A)
 	{
-		if (workDrift_.coolTime == 60)
-		{
-			isDrifting = true;
-			behaviorRequest_ = Behavior::kDrift;
-		}
+		isDrifting = true;
+		behaviorRequest_ = Behavior::kDrift;
 	}
-
-	if (joyState_.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER)
-	{
-		if (workDrift_.coolTime == 60)
-		{
-			behaviorRequest_ = Behavior::kAttack;
-		}
-	}
-
-	if (Input::GetInstance()->GetJoystickState(joyState_))
-	{
-		const float deadZone = 0.7f;
-
-		bool isMoving = false;
-
-		Vector3 move = { (float)joyState_.Gamepad.sThumbLX / SHRT_MAX, 0.0f, (float)joyState_.Gamepad.sThumbLY / SHRT_MAX };
-
-		if (Length(move) > deadZone)
-		{
-			isMoving = true;
-		}
-
-		if (isMoving)
-		{
-			move = Multiply(playerSpeed_, Normalize(move));
-
-			Matrix4x4 rotateMatrix = MakeRotateMatrix(viewProjection_->rotation);
-
-			move = TransformNormal(move, rotateMatrix);
-
-			worldTransform_.translation = Add(worldTransform_.translation, move);
-			targetAngle_ = std::atan2(move.x, move.z);
-		}
-	}
-
-	worldTransform_.rotation.y = LerpShortAngle(worldTransform_.rotation.y, targetAngle_, 0.1f);
 }
 
 void Player::BehaviorAttackInitialize()
@@ -239,11 +197,10 @@ void Player::BehaviorDriftInitialize()
 
 void Player::BehaviorDriftUpdate()
 {
+	float rotationSpeed = 0.1f;
+
 	if (input_->GetJoystickState(joyState_))
 	{
-		const uint32_t behaviorDashTime = 30;
-		float rotationSpeed = 0.1f;
-
 		if (isDrifting)
 		{
 			// ドリフトモード中
@@ -261,7 +218,7 @@ void Player::BehaviorDriftUpdate()
 				bool isMoving = false;
 
 				float runSpeed = 1.5f; // 速い走行速度（調整可能）
-				Vector3 move = { (float)joyState_.Gamepad.sThumbLX / SHRT_MAX, 0.0f, (float)joyState_.Gamepad.sThumbLY / SHRT_MAX };
+				Vector3 move = { (float)-joyState_.Gamepad.sThumbLX / SHRT_MAX, 0.0f, (float)-joyState_.Gamepad.sThumbLY / SHRT_MAX };
 
 				if (Length(move) > deadZone)
 				{
@@ -279,7 +236,7 @@ void Player::BehaviorDriftUpdate()
 				}
 			}
 
-			if (workDrift_.dashParameter_ >= behaviorDashTime)
+			if (workDrift_.dashParameter_ >= behaviorDashTime_)
 			{
 				isDrifting = false;
 				behaviorRequest_ = Behavior::kRoot;

@@ -82,6 +82,7 @@ private:
 	std::unique_ptr<Weapon> weapon_ = nullptr;
 
 	uint32_t behaviorDashTime_ = 15;
+	Vector3 move;
 	float runSpeed_ = 1.5f; // 速い走行速度（調整可能）
 
 	bool isHit_ = false;

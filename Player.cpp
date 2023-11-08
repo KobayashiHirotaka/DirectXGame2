@@ -233,9 +233,6 @@ void Player::BehaviorDriftUpdate()
 	{
 		if (isDrifting)
 		{
-			// ドリフトモード中
-			Vector3 move = { 0.0f, 0.0f, 0.0f }; // ドリフト中は移動しない
-
 			float rotationAmount = (float)joyState_.Gamepad.sThumbLX / SHRT_MAX * rotationSpeed;
 			worldTransform_.rotation.y += rotationAmount;
 
@@ -245,9 +242,9 @@ void Player::BehaviorDriftUpdate()
 				workDrift_.dashParameter_++;
 				const float deadZone = 0.3f;
 
-				bool isMoving = false;
+				move = { (float)-joyState_.Gamepad.sThumbLX / SHRT_MAX, 0.0f, (float)-joyState_.Gamepad.sThumbLY / SHRT_MAX };
 
-				Vector3 move = { (float)-joyState_.Gamepad.sThumbLX / SHRT_MAX, 0.0f, (float)-joyState_.Gamepad.sThumbLY / SHRT_MAX };
+				bool isMoving = false;
 
 				if (Length(move) > deadZone)
 				{

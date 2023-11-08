@@ -12,6 +12,8 @@ void Player::Initialize(const std::vector<Model*>& models)
 	weapon_->Initialize(models_[1]);
 	weapon_->SetParent(&worldTransform_);
 
+	worldTransform_.translation.y = 1.0f;
+
 	behaviorDashTime_ = 15;
 
 	SetCollisionAttribute(kCollisionAttributePlayer);
@@ -129,7 +131,7 @@ void Player::Restart()
 
 void Player::OnCollision(Collider* collider)
 {
-	if (collider->GetCollisionAttribute() & kCollisionAttributeGround && reStart_== false)
+	/*if (collider->GetCollisionAttribute() & kCollisionAttributeGround && reStart_== false)
 	{
 		isHit_ = true;
 		parent_ = &collider->GetWorldTransform();
@@ -139,7 +141,7 @@ void Player::OnCollision(Collider* collider)
 			worldTransform_.DeleteParent();
 			worldTransform_.SetParent(parent_);
 		}
-	}
+	}*/
 
 	/*if (collider->GetCollisionAttribute() & kCollisionAttributeEnemy && reStart_ == false)
 	{
@@ -148,7 +150,7 @@ void Player::OnCollision(Collider* collider)
 
 	if (collider->GetCollisionAttribute() & kCollisionAttributeGoal && reStart_ == false)
 	{
-		behaviorDashTime_ = 100;
+		runSpeed_ = 5.0f;
 	}
 }
 
@@ -173,6 +175,34 @@ void Player::BehaviorRootUpdate()
 		isDrifting = true;
 		behaviorRequest_ = Behavior::kDrift;
 	}
+
+	if (Input::GetInstance()->GetJoystickState(joyState_))
+	{
+		const float deadZone = 0.7f;
+
+		bool isMoving = false;
+
+		Vector3 move = { (float)joyState_.Gamepad.sThumbLX / SHRT_MAX, 0.0f, (float)joyState_.Gamepad.sThumbLY / SHRT_MAX };
+
+		if (Length(move) > deadZone)
+		{
+			isMoving = true;
+		}
+
+		if (isMoving)
+		{
+			move = Multiply(playerSpeed_, Normalize(move));
+
+			Matrix4x4 rotateMatrix = MakeRotateMatrix(viewProjection_->rotation);
+
+			move = TransformNormal(move, rotateMatrix);
+
+			worldTransform_.translation = Add(worldTransform_.translation, move);
+			targetAngle_ = std::atan2(move.x, move.z);
+		}
+	}
+
+	worldTransform_.rotation.y = LerpShortAngle(worldTransform_.rotation.y, targetAngle_, 0.1f);
 }
 
 void Player::BehaviorAttackInitialize()
@@ -217,7 +247,6 @@ void Player::BehaviorDriftUpdate()
 
 				bool isMoving = false;
 
-				float runSpeed = 1.5f; // 速い走行速度（調整可能）
 				Vector3 move = { (float)-joyState_.Gamepad.sThumbLX / SHRT_MAX, 0.0f, (float)-joyState_.Gamepad.sThumbLY / SHRT_MAX };
 
 				if (Length(move) > deadZone)
@@ -227,7 +256,7 @@ void Player::BehaviorDriftUpdate()
 
 				if (isMoving)
 				{
-					move = Multiply(runSpeed, Normalize(move));
+					move = Multiply(runSpeed_, Normalize(move));
 
 					Matrix4x4 rotateMatrix = MakeRotateYMatrix(viewProjection_->rotation.y);
 					move = TransformNormal(move, rotateMatrix);

@@ -260,6 +260,16 @@ void Player::BehaviorDriftUpdate()
 
 					worldTransform_.translation = Add(worldTransform_.translation, move);
 				}
+				else
+				{
+					// スティックを離した後も以前の角度を使って進む
+					move = Multiply(runSpeed_, Normalize(move));
+
+					Matrix4x4 rotateMatrix = MakeRotateYMatrix(viewProjection_->rotation.y);
+					move = TransformNormal(move, rotateMatrix);
+
+					worldTransform_.translation = Add(worldTransform_.translation, move);
+				}
 			}
 
 			if (workDrift_.dashParameter_ >= behaviorDashTime_)

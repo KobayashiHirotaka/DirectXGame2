@@ -76,7 +76,7 @@ private:
 
 	std::unique_ptr<FollowCamera> followCamera_;
 
-	std::unique_ptr<Goal> goal_;
+	std::unique_ptr<Goal> goal_[2];
 	std::unique_ptr<Model> goalModel_;
 
 	std::unique_ptr<Ground> ground_[2];

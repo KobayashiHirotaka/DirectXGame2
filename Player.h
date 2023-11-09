@@ -45,6 +45,10 @@ public:
 
 	void BehaviorDriftUpdate();
 
+	void BehaviorJumpInitialize();
+
+	void BehaviorJumpUpdate();
+
 	Weapon* GetWeapon() { return weapon_.get(); };
 
 private:
@@ -52,7 +56,8 @@ private:
 	{
 		kRoot,
 		kAttack,
-		kDrift
+		kDrift,
+		kJump
 	};
 
 	struct WorkDash
@@ -82,7 +87,15 @@ private:
 	std::unique_ptr<Weapon> weapon_ = nullptr;
 
 	uint32_t behaviorDashTime_ = 15;
-	Vector3 move;
+
+	Vector3 rotationAmount_;
+
+	Vector3 move_;
+
+	float kJumpFirstSpeed_ = 1.0f;
+
+	Vector3 velocity_ = {};
+
 	float runSpeed_ = 1.5f; // 速い走行速度（調整可能）
 
 	bool isHit_ = false;

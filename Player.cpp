@@ -208,10 +208,6 @@ void Player::BehaviorRootUpdate()
 		worldTransform_.translation.y -= 0.05f;
 	}
 
-	if (joyState_.Gamepad.wButtons & XINPUT_GAMEPAD_B) {
-		worldTransform_.translation.y += 0.1f;
-	}
-
 	if (Input::GetInstance()->GetJoystickState(joyState_))
 	{
 		const float deadZone = 0.7f;
@@ -252,7 +248,6 @@ void Player::BehaviorRootUpdate()
 					targetAngle_ = -targetAngle_;
 				}
 			}
-
 		}
 	}
 
@@ -342,7 +337,7 @@ void Player::BehaviorJumpInitialize()
 {
 	isHit_ = false;
 
-	velocity_ = { (float)joyState_.Gamepad.sThumbLX / SHRT_MAX, kJumpFirstSpeed_, (float)joyState_.Gamepad.sThumbLY / SHRT_MAX };
+	velocity_ = { (float)joyState_.Gamepad.sThumbLX / (SHRT_MAX * 3), kJumpFirstSpeed_, (float)joyState_.Gamepad.sThumbLY / (SHRT_MAX * 3) };
 	Matrix4x4 rotateMatrix = MakeRotateMatrix(viewProjection_->rotation);
 
 	velocity_ = TransformNormal(velocity_, rotateMatrix);

@@ -74,7 +74,7 @@ void GamePlayScene::Initialize()
 	ground_[2]->Initialize(groundModel_.get(), { 50.0f, 0.0f, -200.0f });
 	ground_[3]->Initialize(groundModel_.get(), { -50.0f, 0.0f, -200.0f });
 	for (int i = 4; i < groundNum_ - 6; i++) {
-		ground_[i]->Initialize(groundRedModel_.get(), { 0.0f, 5.0f * float(i - 2), 100.0f + (20.0f * float(i - 2))});
+		ground_[i]->Initialize(groundRedModel_.get(), { 0.0f, 5.0f * float(i - 4), 100.0f + (20.0f * float(i - 4))});
 	}
 	for (int i = groundNum_ - 6; i < groundNum_ - 3; i++) {
 		ground_[i]->Initialize(groundRedModel_.get(), { -50.0f, 0.0f, -125.0f - ((i - float(groundNum_ - 6)) * 25.0f) });
@@ -87,7 +87,7 @@ void GamePlayScene::Initialize()
 
 	//moveGround_->Initialize(groundModel_.get(), { 0.0f,0.0f,30.0f });
 
-	enemy_->SetParent(&ground_[1]->GetWorldTransform());
+	//enemy_->SetParent(&ground_[1]->GetWorldTransform());
 
 	followCamera_ = std::make_unique<FollowCamera>();
 	followCamera_->Initialize();
@@ -144,7 +144,7 @@ void GamePlayScene::Update()
 		collisionManager_->AddCollider(player_->GetWeapon());
 	}
 
-	//collisionManager_->AddCollider(enemy_.get());
+	collisionManager_->AddCollider(enemy_.get());
 
 	for (int i = 0; i < groundNum_; i++)
 	{

@@ -42,8 +42,8 @@ void Ground::SetScale(Vector3 scale)
 	worldTransform_.scale = scale;
 	AABB aabbSize =
 	{
-		{-10.0f,0.0f,-10.0f},
-		{10.0f,0.0f,10.0f},
+		{-10.0f * scale.x,0.0f,-10.0f * scale.z},
+		{10.0f * scale.x,0.0f,10.0f * scale.z},
 	};
 	SetAABB(aabbSize);
 }

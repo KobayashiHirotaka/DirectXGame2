@@ -28,14 +28,22 @@ void Player::Initialize(const std::vector<Model*>& models)
 
 	GlobalVariables::GetInstance()->CreateGroup(groupName);
 	globalVariables->AddItem(groupName, "Speed", playerSpeed_);
+
+	AABB aabbSize =
+	{
+		{-1.0f,-1.0f,-1.0f},
+		{1.0f,1.0f,1.0f},
+	};
+
+	SetAABB(aabbSize);
 }
 
 void Player::Update()
 {
-	if (preIsHit_ == false && isHit_ == true) 
+	/*if (preIsHit_ == false && isHit_ == true) 
 	{
 		worldTransform_.SetParent(parent_);
-	}
+	}*/
 
 	if (preIsHit_ == true && isHit_ == false) 
 	{
@@ -91,10 +99,10 @@ void Player::Update()
 		worldTransform_.translation.y -= 0.1f;
 	} */
 	
-	if (isHit_ == true)
+	/*if (isHit_ == true)
 	{
 		worldTransform_.translation.y = 1.0f;
-	}
+	}*/
 
 	/*if (worldTransform_.translation.y <= -4.0f)
 	{
@@ -131,17 +139,20 @@ void Player::Restart()
 
 void Player::OnCollision(Collider* collider)
 {
-	/*if (collider->GetCollisionAttribute() & kCollisionAttributeGround && reStart_== false)
+	if (collider->GetCollisionAttribute() & kCollisionAttributeGround && reStart_== false)
 	{
 		isHit_ = true;
-		parent_ = &collider->GetWorldTransform();
+		if (worldTransform_.translation.y < collider->GetWorldPosition().y + 1.0f) {
+			worldTransform_.translation.y = collider->GetWorldPosition().y + 1.0f;
+		}
+		/*parent_ = &collider->GetWorldTransform();
 
 		if (worldTransform_.parent_ != parent_)
 		{
 			worldTransform_.DeleteParent();
 			worldTransform_.SetParent(parent_);
-		}
-	}*/
+		}*/
+	}
 
 	/*if (collider->GetCollisionAttribute() & kCollisionAttributeEnemy && reStart_ == false)
 	{
@@ -176,6 +187,14 @@ void Player::BehaviorRootUpdate()
 		behaviorRequest_ = Behavior::kDrift;
 	}
 
+	if (!isHit_) {
+		worldTransform_.translation.y -= 0.05f;
+	}
+
+	if (joyState_.Gamepad.wButtons & XINPUT_GAMEPAD_B) {
+		worldTransform_.translation.y += 0.1f;
+	}
+
 	if (Input::GetInstance()->GetJoystickState(joyState_))
 	{
 		const float deadZone = 0.7f;
@@ -200,6 +219,7 @@ void Player::BehaviorRootUpdate()
 			worldTransform_.translation = Add(worldTransform_.translation, move);
 			targetAngle_ = std::atan2(move.x, move.z);
 		}
+
 	}
 
 	worldTransform_.rotation.y = LerpShortAngle(worldTransform_.rotation.y, targetAngle_, 0.1f);

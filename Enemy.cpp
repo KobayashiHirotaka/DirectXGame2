@@ -5,6 +5,7 @@ void Enemy::Initialize(const std::vector<Model*>& models)
 {
 	ICharacter::Initialize(models);
 
+	worldTransform_.translation = { 0.0f,30.0f,250.0f };
 	worldTransformHead_.Initialize();
 	worldTransformBody_.Initialize();
 	worldTransformBody_.translation = { 0.0f,1.0f,0.0f };
@@ -29,6 +30,14 @@ void Enemy::Initialize(const std::vector<Model*>& models)
 	SetCollisionPrimitive(kCollisionPrimitiveAABB);
 
 	HP_ = 5;
+
+	AABB aabbSize =
+	{
+		{-1.0f,-1.0f,-1.0f},
+		{1.0f,1.0f,1.0f},
+	};
+
+	SetAABB(aabbSize);
 }
 
 void Enemy::Update()
@@ -94,8 +103,11 @@ void Enemy::SetParent(const WorldTransform* parent)
 
 void Enemy::OnCollision(Collider* collider)
 {
-	if (HP_ > 0) {
-		HP_ -= 1;
+	if (collider->GetCollisionAttribute() & kCollisionAttributePlayer)
+	{
+		if (HP_ > 0 && behavior_ != Behavior::kAttack) {
+			behaviorRequest_ = Behavior::kAttack;
+		}
 	}
 }
 
@@ -128,9 +140,10 @@ void Enemy::BehaviorAttackInitialize()
 
 void Enemy::BehaviorAttackUpdate()
 {
-	if (++workAttack_.parameter > 300) {
+	if (++workAttack_.parameter > 120) {
 		behaviorRequest_ = Behavior::kRoot;
 		worldTransform_.rotation.y = 0.0f;
+		HP_ -= 1;
 	}
 	else {
 		worldTransform_.rotation.y += workAttack_.addValue;

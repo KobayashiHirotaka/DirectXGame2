@@ -55,9 +55,6 @@ void GamePlayScene::Initialize()
 	enemy_ = std::make_unique<Enemy>();
 	enemy_->Initialize(enemyModels);
 
-	goal_ = std::make_unique<Goal>();
-	goal_->Initialize(goalModel_.get(),{0.0f,1.0f,75.0f});
-
 	skydome_ = std::make_unique<Skydome>();
 	skydome_->Initialize(skydomeModel_.get());
 
@@ -66,6 +63,15 @@ void GamePlayScene::Initialize()
 	{
 		ground_[i] = std::make_unique<Ground>();
 	}
+
+	for (int i = 0; i < 2; i++)
+	{
+		goal_[i] = std::make_unique<Goal>();
+	}
+
+
+	goal_[0]->Initialize(goalModel_.get(), { 10.0f,1.0f,75.0f });
+	goal_[1]->Initialize(goalModel_.get(), { -10.0f,1.0f,75.0f });
 
 	ground_[0]->Initialize(groundModel_.get(), { 0.0f,0.0f,0.0f });
 	ground_[0]->SetScale({ 10.0f, 1.0f, 10.0f });
@@ -103,13 +109,16 @@ void GamePlayScene::Update()
 
 	enemy_->Update();
 
-	goal_->Update();
-
 	skydome_->Updata();
 
 	for (int i = 0; i < groundNum_; i++)
 	{
 		ground_[i]->Update();
+	}
+
+	for (int i = 0; i < 2; i++)
+	{
+		goal_[i]->Update();
 	}
 
 	//moveGround_->Update();
@@ -151,6 +160,11 @@ void GamePlayScene::Update()
 		collisionManager_->AddCollider(ground_[i].get());
 	}
 
+	for (int i = 0; i < 2; i++)
+	{
+		collisionManager_->AddCollider(goal_[i].get());
+	}
+
 	//collisionManager_->AddCollider(moveGround_.get());
 	//collisionManager_->AddCollider(goal_.get());
 	collisionManager_->CheckAllCollision();
@@ -166,8 +180,15 @@ void GamePlayScene::Draw()
 
 	//skydome_->Draw(viewProjection_);
 
+	for (int i = 0; i < 2; i++)
+	{
+		goal_[i]->Draw(viewProjection_);
+		ground_[i]->Draw(viewProjection_);
+	}
+
 	for (int i = 0; i < groundNum_; i++)
 	{
+		goal_[i]->Draw(viewProjection_);
 		ground_[i]->Draw(viewProjection_);
 	}
 

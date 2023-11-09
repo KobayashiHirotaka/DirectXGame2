@@ -79,7 +79,7 @@ private:
 
 	std::unique_ptr<FollowCamera> followCamera_;
 
-	std::unique_ptr<Goal> goal_;
+	std::unique_ptr<Goal> goal_[2];
 	std::unique_ptr<Model> goalModel_;
 	static const uint32_t groundNum_ = 16;
 	std::unique_ptr<Ground> ground_[groundNum_];

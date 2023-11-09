@@ -73,6 +73,10 @@ void Player::Update()
 		case Behavior::kDrift:
 			BehaviorDriftInitialize();
 			break;
+
+		case Behavior::kJump:
+			BehaviorJumpInitialize();
+			break;
 		}
 
 		behaviorRequest_ = std::nullopt;
@@ -92,17 +96,17 @@ void Player::Update()
 	case Behavior::kDrift:
 		BehaviorDriftUpdate();
 		break;
+
+	case Behavior::kJump:
+		BehaviorJumpUpdate();
+		break;
 	}
 
 	/*if (isHit_ == false)
 	{
 		worldTransform_.translation.y -= 0.1f;
 	} */
-	
-	/*if (isHit_ == true)
-	{
-		worldTransform_.translation.y = 1.0f;
-	}*/
+
 
 	/*if (worldTransform_.translation.y <= -4.0f)
 	{
@@ -161,7 +165,8 @@ void Player::OnCollision(Collider* collider)
 
 	if (collider->GetCollisionAttribute() & kCollisionAttributeGoal && reStart_ == false)
 	{
-		runSpeed_ = 5.0f;
+		playerSpeed_ = 5.0f;
+		runSpeed_ += 1.0f;
 	}
 }
 
@@ -177,14 +182,19 @@ Vector3 Player::GetWorldPosition()
 void Player::BehaviorRootInitialize()
 {
 	worldTransform_.Initialize();
+	worldTransform_.translation.y = 1.0f;
 }
 
 void Player::BehaviorRootUpdate()
 {
+	if (joyState_.Gamepad.wButtons & XINPUT_GAMEPAD_B)
+	{
+		behaviorRequest_ = Behavior::kDrift;
+	}
+
 	if (joyState_.Gamepad.wButtons & XINPUT_GAMEPAD_A)
 	{
-		isDrifting = true;
-		behaviorRequest_ = Behavior::kDrift;
+		behaviorRequest_ = Behavior::kJump;
 	}
 
 	if (!isHit_) {
@@ -201,25 +211,42 @@ void Player::BehaviorRootUpdate()
 
 		bool isMoving = false;
 
-		Vector3 move = { (float)joyState_.Gamepad.sThumbLX / SHRT_MAX, 0.0f, (float)joyState_.Gamepad.sThumbLY / SHRT_MAX };
+		Vector3 velocity_ = { (float)joyState_.Gamepad.sThumbLX / SHRT_MAX, 0.0f, (float)joyState_.Gamepad.sThumbLY / SHRT_MAX };
 
-		if (Length(move) > deadZone)
+		if (Length(velocity_) > deadZone)
 		{
 			isMoving = true;
 		}
 
 		if (isMoving)
 		{
-			move = Multiply(playerSpeed_, Normalize(move));
+			velocity_ = Multiply(playerSpeed_, Normalize(velocity_));
 
 			Matrix4x4 rotateMatrix = MakeRotateMatrix(viewProjection_->rotation);
 
-			move = TransformNormal(move, rotateMatrix);
+			velocity_ = TransformNormal(velocity_, rotateMatrix);
 
-			worldTransform_.translation = Add(worldTransform_.translation, move);
-			targetAngle_ = std::atan2(move.x, move.z);
+			worldTransform_.translation = Add(worldTransform_.translation, velocity_);
+
+			if (velocity_.z == 0.0 && velocity_.x == 0.0)
+			{
+				targetAngle_ = 0.0;
+
+			}
+			else {
+				float dotProduct = velocity_.x;
+
+				float magnitude = std::sqrt(velocity_.x * velocity_.x + velocity_.z * velocity_.z);
+
+				targetAngle_ = std::acos(dotProduct / magnitude);
+
+				if (velocity_.z < 0)
+				{
+					targetAngle_ = -targetAngle_;
+				}
+			}
+
 		}
-
 	}
 
 	worldTransform_.rotation.y = LerpShortAngle(worldTransform_.rotation.y, targetAngle_, 0.1f);
@@ -249,48 +276,83 @@ void Player::BehaviorDriftUpdate()
 {
 	float rotationSpeed = 0.1f;
 
-	if (input_->GetJoystickState(joyState_))
+	if (input_->GetJoystickState(joyState_) && isDrifting == false)
 	{
-		if (isDrifting)
+		rotationAmount_ = { (float)joyState_.Gamepad.sThumbLX / SHRT_MAX,0.0f, (float)joyState_.Gamepad.sThumbLY / SHRT_MAX };
+		worldTransform_.rotation.y += rotationSpeed;
+
+		// Aボタンが離されたらドリフトモードを解除
+		if (!(joyState_.Gamepad.wButtons & XINPUT_GAMEPAD_B))
 		{
-			// ドリフトモード中
-			Vector3 move = { 0.0f, 0.0f, 0.0f }; // ドリフト中は移動しない
-
-			float rotationAmount = (float)joyState_.Gamepad.sThumbLX / SHRT_MAX * rotationSpeed;
-			worldTransform_.rotation.y += rotationAmount;
-
-			// Aボタンが離されたらドリフトモードを解除
-			if (!(joyState_.Gamepad.wButtons & XINPUT_GAMEPAD_A))
-			{
-				workDrift_.dashParameter_++;
-				const float deadZone = 0.3f;
-
-				bool isMoving = false;
-
-				Vector3 move = { (float)-joyState_.Gamepad.sThumbLX / SHRT_MAX, 0.0f, (float)-joyState_.Gamepad.sThumbLY / SHRT_MAX };
-
-				if (Length(move) > deadZone)
-				{
-					isMoving = true;
-				}
-
-				if (isMoving)
-				{
-					move = Multiply(runSpeed_, Normalize(move));
-
-					Matrix4x4 rotateMatrix = MakeRotateYMatrix(viewProjection_->rotation.y);
-					move = TransformNormal(move, rotateMatrix);
-
-					worldTransform_.translation = Add(worldTransform_.translation, move);
-				}
-			}
-
-			if (workDrift_.dashParameter_ >= behaviorDashTime_)
-			{
-				isDrifting = false;
-				behaviorRequest_ = Behavior::kRoot;
-			}
+			isDrifting = true;
 		}
+		
+	}
+
+	if (isDrifting)
+	{
+		workDrift_.dashParameter_++;
+		const float deadZone = 0.0f;
+
+		move_ = { -rotationAmount_.x, 0.0f, -rotationAmount_.z };
+
+		bool isMoving = false;
+
+		if (Length(move_) > deadZone)
+		{
+			isMoving = true;
+		}
+
+		if (isMoving)
+		{
+			move_ = Multiply(runSpeed_, Normalize(move_));
+
+			Matrix4x4 rotateMatrix = MakeRotateYMatrix(viewProjection_->rotation.y);
+			move_ = TransformNormal(move_, rotateMatrix);
+
+			worldTransform_.translation = Add(worldTransform_.translation, move_);
+		}
+		//else
+		//{
+		//	// スティックを離した後も以前の角度を使って進む
+		//	move = Multiply(runSpeed_, Normalize(move));
+
+		//	Matrix4x4 rotateMatrix = MakeRotateYMatrix(viewProjection_->rotation.y);
+		//	move = TransformNormal(move, rotateMatrix);
+
+		//	worldTransform_.translation = Add(worldTransform_.translation, move);
+		//}
+	}
+
+	if (workDrift_.dashParameter_ >= behaviorDashTime_)
+	{
+		isDrifting = false;
+		behaviorRequest_ = Behavior::kRoot;
+	}
+}
+
+void Player::BehaviorJumpInitialize()
+{
+	worldTransform_.translation.y = 1.0f;
+
+	velocity_ = { (float)joyState_.Gamepad.sThumbLX / SHRT_MAX, kJumpFirstSpeed_, (float)joyState_.Gamepad.sThumbLY / SHRT_MAX };
+}
+
+void Player::BehaviorJumpUpdate()
+{
+	worldTransform_.translation = Add(worldTransform_.translation, velocity_);
+
+	const float kGravityAcceleration_ = 0.05f;
+
+	Vector3 accelerationVector_ = { 0.0f,-kGravityAcceleration_,0.0f };
+
+	velocity_ = Add(velocity_, accelerationVector_);
+
+	if (worldTransform_.translation.y <= 1.0f)
+	{
+		worldTransform_.translation.y = 1.0f;
+
+		behaviorRequest_ = Behavior::kRoot;
 	}
 }
 

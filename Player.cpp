@@ -170,7 +170,7 @@ void Player::OnCollision(Collider* collider)
 	if (collider->GetCollisionAttribute() & kCollisionAttributeGoal && reStart_ == false)
 	{
 		playerSpeed_ = 5.0f;
-		runSpeed_ += 1.0f;
+		runSpeed_ = 5.0f;
 	}
 }
 
@@ -297,7 +297,7 @@ void Player::BehaviorDriftUpdate()
 		workDrift_.dashParameter_++;
 		const float deadZone = 0.0f;
 
-		move_ = { -rotationAmount_.x, 0.0f, -rotationAmount_.z };
+		move_ = { rotationAmount_.x, 0.0f, rotationAmount_.z };
 
 		bool isMoving = false;
 

@@ -21,6 +21,8 @@ public:
 
 	void Reset();
 
+	void ApplyGlobalVariables();
+
 private:
 	WorldTransform worldTransform_;
 	const WorldTransform* target_ = nullptr;
@@ -32,6 +34,8 @@ private:
 	XINPUT_STATE joyState_;
 
 	Vector3 interTarget_{};
+
+	Vector3 offset = { 0.0f, 2.0f, -25.0f };
 
 	float destinationAngleY_ = 0.0f;
 };

@@ -74,7 +74,7 @@ private:
 
 	XINPUT_STATE joyState_;
 
-	float playerSpeed_ = 0.3f;
+	float playerSpeed_ = 0.4f;
 
 	float targetAngle_ = 0.0f;
 

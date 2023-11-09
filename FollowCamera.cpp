@@ -1,10 +1,20 @@
 #include "FollowCamera.h"
+#include "GlobalVariables.h"
 
 void FollowCamera::Initialize()
 {
 	input_ = Input::GetInstance();
 
 	viewProjection_.Initialize();
+
+	GlobalVariables* globalVariables{};
+	globalVariables = GlobalVariables::GetInstance();
+
+	const char* groupName = "FollowCamera";
+
+	GlobalVariables::GetInstance()->CreateGroup(groupName);
+	globalVariables->AddItem(groupName, "Offset", offset);
+	globalVariables->AddItem(groupName, "rotation", viewProjection_.rotation);
 }
 
 void FollowCamera::Update()
@@ -44,6 +54,8 @@ void FollowCamera::Update()
 
 	viewProjection_.UpdateViewMatrix();
 	viewProjection_.TransferMatrix();
+
+	FollowCamera::ApplyGlobalVariables();
 }
 
 Vector3 FollowCamera::GetWorldPosition()
@@ -63,8 +75,6 @@ void FollowCamera::SetTarget(const WorldTransform* target)
 
 Vector3 FollowCamera::Offset()
 {
-	Vector3 offset = { 0.0f, 2.0f, -25.0f };
-	
 	Matrix4x4 rotateXMatrix = MakeRotateXMatrix(viewProjection_.rotation.x);
 	Matrix4x4 rotateYMatrix = MakeRotateYMatrix(viewProjection_.rotation.y);
 	Matrix4x4 rotateZMatrix = MakeRotateZMatrix(viewProjection_.rotation.z);
@@ -88,4 +98,14 @@ void FollowCamera::Reset()
 
 	Vector3 offset = FollowCamera::Offset();
 	viewProjection_.translation = Add(interTarget_, offset);
+}
+
+void FollowCamera::ApplyGlobalVariables()
+{
+	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
+
+	const char* groupName = "FollowCamera";
+
+	offset = globalVariables->GetVector3Value(groupName, "Offset");
+	viewProjection_.rotation = globalVariables->GetVector3Value(groupName, "rotation");
 }

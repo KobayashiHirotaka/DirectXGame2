@@ -348,7 +348,7 @@ void Player::BehaviorJumpUpdate()
 
 	velocity_ = Add(velocity_, accelerationVector_);
 
-	if (worldTransform_.translation.y <= 1.0f)
+	if (worldTransform_.translation.y <= 1.0f )
 	{
 		worldTransform_.translation.y = 1.0f;
 

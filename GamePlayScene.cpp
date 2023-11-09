@@ -176,19 +176,15 @@ void GamePlayScene::Draw()
 
 	enemy_->Draw(viewProjection_);
 
-	goal_->Draw(viewProjection_);
-
 	//skydome_->Draw(viewProjection_);
 
 	for (int i = 0; i < 2; i++)
 	{
 		goal_[i]->Draw(viewProjection_);
-		ground_[i]->Draw(viewProjection_);
 	}
 
 	for (int i = 0; i < groundNum_; i++)
 	{
-		goal_[i]->Draw(viewProjection_);
 		ground_[i]->Draw(viewProjection_);
 	}
 

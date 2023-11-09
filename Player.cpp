@@ -182,7 +182,6 @@ Vector3 Player::GetWorldPosition()
 void Player::BehaviorRootInitialize()
 {
 	worldTransform_.Initialize();
-	worldTransform_.translation.y = 1.0f;
 }
 
 void Player::BehaviorRootUpdate()
@@ -333,7 +332,7 @@ void Player::BehaviorDriftUpdate()
 
 void Player::BehaviorJumpInitialize()
 {
-	worldTransform_.translation.y = 1.0f;
+	isHit_ = false;
 
 	velocity_ = { (float)joyState_.Gamepad.sThumbLX / SHRT_MAX, kJumpFirstSpeed_, (float)joyState_.Gamepad.sThumbLY / SHRT_MAX };
 }
@@ -348,10 +347,8 @@ void Player::BehaviorJumpUpdate()
 
 	velocity_ = Add(velocity_, accelerationVector_);
 
-	if (worldTransform_.translation.y <= 1.0f )
+	if (isHit_)
 	{
-		worldTransform_.translation.y = 1.0f;
-
 		behaviorRequest_ = Behavior::kRoot;
 	}
 }

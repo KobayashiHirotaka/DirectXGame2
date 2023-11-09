@@ -337,7 +337,7 @@ void Player::BehaviorJumpInitialize()
 {
 	isHit_ = false;
 
-	velocity_ = { (float)joyState_.Gamepad.sThumbLX / (SHRT_MAX * 3), kJumpFirstSpeed_, (float)joyState_.Gamepad.sThumbLY / (SHRT_MAX * 3) };
+	velocity_ = { (float)joyState_.Gamepad.sThumbLX / (SHRT_MAX * 2), kJumpFirstSpeed_, (float)joyState_.Gamepad.sThumbLY / (SHRT_MAX * 2) };
 	Matrix4x4 rotateMatrix = MakeRotateMatrix(viewProjection_->rotation);
 
 	velocity_ = TransformNormal(velocity_, rotateMatrix);

@@ -20,6 +20,8 @@ public:
 
 	void OnCollision(Collider* collider)override;
 
+	void SetScale(Vector3 scale);
+
 private:
 	WorldTransform worldTransform_;
 

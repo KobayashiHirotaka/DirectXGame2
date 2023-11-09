@@ -37,6 +37,18 @@ void Ground::OnCollision(Collider* collider)
 	
 }
 
+void Ground::SetScale(Vector3 scale)
+{
+	worldTransform_.scale = scale;
+	AABB aabbSize =
+	{
+		{-10.0f,0.0f,-10.0f},
+		{10.0f,0.0f,10.0f},
+	};
+	SetAABB(aabbSize);
+}
+
+
 Vector3 Ground::GetWorldPosition()
 {
 	Vector3 pos{};

@@ -24,6 +24,7 @@
 #include "MoveGround.h"
 #include "Skydome.h"
 
+
 #define DIRECTINPUT_VERSION 0x0800//DirectInputのバージョン指定
 #include <dinput.h>
 #pragma comment(lib,"dinput8.lib")
@@ -43,6 +44,8 @@ private:
 	MyEngine* engine_ = nullptr;
 
 	Camera* camera_ = nullptr;
+
+	//std::unique_ptr<DebugCamera> debugCamera_ = nullptr;
 
 	TextureManager* textureManager_ = nullptr;
 
@@ -78,10 +81,11 @@ private:
 
 	std::unique_ptr<Goal> goal_;
 	std::unique_ptr<Model> goalModel_;
-
-	std::unique_ptr<Ground> ground_[2];
+	static const uint32_t groundNum_ = 16;
+	std::unique_ptr<Ground> ground_[groundNum_];
 	std::unique_ptr<MoveGround> moveGround_;
 	std::unique_ptr<Model> groundModel_;
+	std::unique_ptr<Model> groundRedModel_;
 
 	std::unique_ptr<Skydome> skydome_;
 	std::unique_ptr<Model> skydomeModel_;

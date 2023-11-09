@@ -1,4 +1,5 @@
 #include "Enemy.h"
+#include "Input.h"
 
 void Enemy::Initialize(const std::vector<Model*>& models)
 {
@@ -26,12 +27,84 @@ void Enemy::Initialize(const std::vector<Model*>& models)
 	SetCollisionAttribute(kCollisionAttributeEnemy);
 	SetCollisionMask(kCollisionMaskEnemy);
 	SetCollisionPrimitive(kCollisionPrimitiveAABB);
+
+	HP_ = 5;
 }
 
 void Enemy::Update()
 {
 	ICharacter::Update();
 
+	if (Input::GetInstance()->IsReleseKey(DIK_0)) {
+		behaviorRequest_ = Behavior::kAttack;
+	}
+
+	if (behaviorRequest_) {
+		// 振る舞いを変更する
+		behavior_ = behaviorRequest_.value();
+		// 各振る舞いごとの初期化を実行
+		switch (behavior_) {
+
+		case Behavior::kRoot:
+		default:
+			BehaviorRootInitialize();
+			break;
+		case Behavior::kAttack:
+			BehaviorAttackInitialize();
+			break;
+		}
+		// 振る舞いリクエストをリセット
+		behaviorRequest_ = std::nullopt;
+	}
+
+	switch (behavior_) {
+		// 通常行動
+	case Behavior::kRoot:
+	default:
+		BehaviorRootUpdate();
+		break;
+		// 攻撃行動
+	case Behavior::kAttack:
+		BehaviorAttackUpdate();
+		break;
+	}
+
+	worldTransform_.UpdateMatrix();
+
+	worldTransformBody_.UpdateMatrix();
+	worldTransformHead_.UpdateMatrix();
+	worldTransformL_arm_.UpdateMatrix();
+	worldTransformR_arm_.UpdateMatrix();
+}
+
+void Enemy::Draw(const ViewProjection& viewProjection)
+{
+	if (HP_ > 0) {
+		models_[kModelIndexBody]->Draw(worldTransformBody_, viewProjection);
+		models_[kModelIndexHead]->Draw(worldTransformHead_, viewProjection);
+		models_[kModelIndexL_arm]->Draw(worldTransformL_arm_, viewProjection);
+		models_[kModelIndexR_arm]->Draw(worldTransformR_arm_, viewProjection);
+	}
+}
+
+void Enemy::SetParent(const WorldTransform* parent)
+{
+	worldTransform_.parent_ = parent;
+}
+
+void Enemy::OnCollision(Collider* collider)
+{
+	if (HP_ > 0) {
+		HP_ -= 1;
+	}
+}
+
+void Enemy::BehaviorRootInitialize()
+{
+}
+
+void Enemy::BehaviorRootUpdate()
+{
 	worldTransform_.translation = Add(worldTransform_.translation, move_);
 
 	if (worldTransform_.translation.x >= 5.0f)
@@ -45,31 +118,24 @@ void Enemy::Update()
 	}
 
 	FloatingGimmickUpdate();
-
-	worldTransform_.UpdateMatrix();
-
-	worldTransformBody_.UpdateMatrix();
-	worldTransformHead_.UpdateMatrix();
-	worldTransformL_arm_.UpdateMatrix();
-	worldTransformR_arm_.UpdateMatrix();
 }
 
-void Enemy::Draw(const ViewProjection& viewProjection)
+void Enemy::BehaviorAttackInitialize()
 {
-	models_[kModelIndexBody]->Draw(worldTransformBody_, viewProjection);
-	models_[kModelIndexHead]->Draw(worldTransformHead_, viewProjection);
-	models_[kModelIndexL_arm]->Draw(worldTransformL_arm_, viewProjection);
-	models_[kModelIndexR_arm]->Draw(worldTransformR_arm_, viewProjection);
+	workAttack_.parameter = 0.0f;
+	workAttack_.addValue = 1.0f;
 }
 
-void Enemy::SetParent(const WorldTransform* parent)
+void Enemy::BehaviorAttackUpdate()
 {
-	worldTransform_.parent_ = parent;
-}
+	if (++workAttack_.parameter > 300) {
+		behaviorRequest_ = Behavior::kRoot;
+		worldTransform_.rotation.y = 0.0f;
+	}
+	else {
+		worldTransform_.rotation.y += workAttack_.addValue;
+	}
 
-void Enemy::OnCollision(Collider* collider)
-{
-	
 }
 
 Vector3 Enemy::GetWorldPosition()

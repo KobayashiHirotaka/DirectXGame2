@@ -127,7 +127,7 @@ void Player::Restart()
 
 void Player::OnCollision(Collider* collider)
 {
-	if (collider->GetCollisionAttribute() & kCollisionAttributeGround && reStart_== false)
+	/*if (collider->GetCollisionAttribute() & kCollisionAttributeGround && reStart_== false)
 	{
 		isHit_ = true;
 		parent_ = &collider->GetWorldTransform();
@@ -137,9 +137,9 @@ void Player::OnCollision(Collider* collider)
 			worldTransform_.DeleteParent();
 			worldTransform_.SetParent(parent_);
 		}
-	}
+	}*/
 
-	if (collider->GetCollisionAttribute() & kCollisionAttributeEnemy && reStart_ == false)
+	/*if (collider->GetCollisionAttribute() & kCollisionAttributeEnemy && reStart_ == false)
 	{
 		Restart();
 	}
@@ -147,7 +147,7 @@ void Player::OnCollision(Collider* collider)
 	if (collider->GetCollisionAttribute() & kCollisionAttributeGoal && reStart_ == false)
 	{
 		Restart();
-	}
+	}*/
 }
 
 Vector3 Player::GetWorldPosition()
@@ -186,6 +186,15 @@ void Player::BehaviorRootUpdate()
 		{
 			behaviorRequest_ = Behavior::kAttack;
 		}
+	}
+	if (worldTransform_.translation.y > 0.0f) {
+		worldTransform_.translation.y -= 0.1f;
+	}
+	else {
+		worldTransform_.translation.y = 0.0f;
+	}
+	if (joyState_.Gamepad.wButtons & XINPUT_GAMEPAD_B) {
+		worldTransform_.translation.y += 1.0f;
 	}
 
 	if (Input::GetInstance()->GetJoystickState(joyState_))

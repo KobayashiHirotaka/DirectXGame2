@@ -38,6 +38,7 @@ void GamePlayScene::Initialize()
 	goalModel_.reset(Model::CreateModelFromObj("resource/player", "player.obj"));
 
 	groundModel_.reset(Model::CreateModelFromObj("resource/ground", "ground.obj"));
+	groundRedModel_.reset(Model::CreateModelFromObj("resource/groundRed", "groundRed.obj"));
 
 	skydomeModel_.reset(Model::CreateModelFromObj("resource/skydome", "skydome.obj"));
 
@@ -61,17 +62,30 @@ void GamePlayScene::Initialize()
 	skydome_->Initialize(skydomeModel_.get());
 
 
-	for (int i = 0; i < 2; i++)
+	for (int i = 0; i < groundNum_; i++)
 	{
 		ground_[i] = std::make_unique<Ground>();
 	}
 
 	ground_[0]->Initialize(groundModel_.get(), { 0.0f,0.0f,0.0f });
-	ground_[1]->Initialize(groundModel_.get(), { 0.0f,0.0f,65.0f });
+	ground_[0]->SetScale({ 10.0f, 1.0f, 10.0f });
+	ground_[1]->Initialize(groundModel_.get(), { 0.0f,30.0f,250.0f });
+	ground_[1]->SetScale({ 5.0f, 5.0f, 5.0f });
+	ground_[2]->Initialize(groundModel_.get(), { 50.0f, 0.0f, -200.0f });
+	ground_[3]->Initialize(groundModel_.get(), { -50.0f, 0.0f, -200.0f });
+	for (int i = 4; i < groundNum_ - 6; i++) {
+		ground_[i]->Initialize(groundRedModel_.get(), { 0.0f, 5.0f * float(i - 2), 100.0f + (20.0f * float(i - 2))});
+	}
+	for (int i = groundNum_ - 6; i < groundNum_ - 3; i++) {
+		ground_[i]->Initialize(groundRedModel_.get(), { -50.0f, 0.0f, -125.0f - ((i - float(groundNum_ - 6)) * 25.0f) });
+	}
+	for (int i = groundNum_ - 3; i < groundNum_; i++) {
+		ground_[i]->Initialize(groundRedModel_.get(), { 50.0f, 0.0f, -125.0f - ((i - float(groundNum_ - 3)) * 25.0f) });
+	}
+	
+	//moveGround_ = std::make_unique<MoveGround>();
 
-	moveGround_ = std::make_unique<MoveGround>();
-
-	moveGround_->Initialize(groundModel_.get(), { 0.0f,0.0f,30.0f });
+	//moveGround_->Initialize(groundModel_.get(), { 0.0f,0.0f,30.0f });
 
 	enemy_->SetParent(&ground_[1]->GetWorldTransform());
 
@@ -93,17 +107,34 @@ void GamePlayScene::Update()
 
 	skydome_->Updata();
 
-	for (int i = 0; i < 2; i++)
+	for (int i = 0; i < groundNum_; i++)
 	{
 		ground_[i]->Update();
 	}
 
-	moveGround_->Update();
+	//moveGround_->Update();
 
-	viewProjection_.UpdateMatrix();
-	
-	followCamera_->Update();
-	viewProjection_ = followCamera_->GetViewProjection();
+#ifdef _DEBUG
+	if (Input::GetInstance()->IsReleseKey(DIK_LSHIFT)) {
+		isDebugCameraActive_ ^= true;
+	}
+#endif
+	if (isDebugCameraActive_) {
+		ImGui::Begin("Camera");
+		ImGui::SliderFloat3("rotation", &viewProjection_.rotation.x, 0.0f, 6.28f);
+		ImGui::SliderFloat3("transform", &viewProjection_.translation.x, -200.0f, 200.0f);
+		ImGui::End();
+
+		camera_->Update();
+		viewProjection_.UpdateMatrix();
+	}
+	else {
+		viewProjection_.UpdateMatrix();
+
+		followCamera_->Update();
+		viewProjection_ = followCamera_->GetViewProjection();
+	}
+
 
 	collisionManager_->ClearColliders();
 	collisionManager_->AddCollider(player_.get());
@@ -113,15 +144,15 @@ void GamePlayScene::Update()
 		collisionManager_->AddCollider(player_->GetWeapon());
 	}
 
-	collisionManager_->AddCollider(enemy_.get());
+	//collisionManager_->AddCollider(enemy_.get());
 
-	for (int i = 0; i < 2; i++)
+	for (int i = 0; i < groundNum_; i++)
 	{
 		collisionManager_->AddCollider(ground_[i].get());
 	}
 
-	collisionManager_->AddCollider(moveGround_.get());
-	collisionManager_->AddCollider(goal_.get());
+	//collisionManager_->AddCollider(moveGround_.get());
+	//collisionManager_->AddCollider(goal_.get());
 	collisionManager_->CheckAllCollision();
 }
 
@@ -133,12 +164,12 @@ void GamePlayScene::Draw()
 
 	goal_->Draw(viewProjection_);
 
-	skydome_->Draw(viewProjection_);
+	//skydome_->Draw(viewProjection_);
 
-	for (int i = 0; i < 2; i++)
+	for (int i = 0; i < groundNum_; i++)
 	{
 		ground_[i]->Draw(viewProjection_);
 	}
 
-	moveGround_->Draw(viewProjection_);
+	//moveGround_->Draw(viewProjection_);
 }

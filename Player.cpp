@@ -45,6 +45,10 @@ void Player::Update()
 		worldTransform_.SetParent(parent_);
 	}*/
 
+	if (worldTransform_.translation.y < 0.0f) {
+		Restart();
+	}
+
 	if (preIsHit_ == true && isHit_ == false) 
 	{
 		worldTransform_.DeleteParent();
@@ -137,7 +141,7 @@ void Player::Draw(const ViewProjection& viewProjection)
 void Player::Restart()
 {
 	reStart_ = true;
-	worldTransform_.translation = { 0.0f,0.0f,0.0f };
+	worldTransform_.translation = { 0.0f,1.0f,0.0f };
 	worldTransform_.parent_ = nullptr;
 }
 

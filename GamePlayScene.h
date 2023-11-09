@@ -81,7 +81,7 @@ private:
 
 	std::unique_ptr<Goal> goal_[2];
 	std::unique_ptr<Model> goalModel_;
-	static const uint32_t groundNum_ = 16;
+	static const uint32_t groundNum_ = 18;
 	std::unique_ptr<Ground> ground_[groundNum_];
 	std::unique_ptr<MoveGround> moveGround_;
 	std::unique_ptr<Model> groundModel_;

@@ -79,14 +79,14 @@ void GamePlayScene::Initialize()
 	ground_[1]->SetScale({ 5.0f, 5.0f, 5.0f });
 	ground_[2]->Initialize(groundModel_.get(), { 50.0f, 0.0f, -200.0f });
 	ground_[3]->Initialize(groundModel_.get(), { -50.0f, 0.0f, -200.0f });
-	for (int i = 4; i < groundNum_ - 6; i++) {
+	for (int i = 4; i < groundNum_ - 8; i++) {
 		ground_[i]->Initialize(groundRedModel_.get(), { 0.0f, 5.0f * float(i - 4), 100.0f + (20.0f * float(i - 4))});
 	}
-	for (int i = groundNum_ - 6; i < groundNum_ - 3; i++) {
-		ground_[i]->Initialize(groundRedModel_.get(), { -50.0f, 0.0f, -125.0f - ((i - float(groundNum_ - 6)) * 25.0f) });
+	for (int i = groundNum_ - 8; i < groundNum_ - 3; i++) {
+		ground_[i]->Initialize(groundRedModel_.get(), { 50.0f, 0.0f, -100.0f - ((i - float(groundNum_ - 8)) * 20.0f) });
 	}
 	for (int i = groundNum_ - 3; i < groundNum_; i++) {
-		ground_[i]->Initialize(groundRedModel_.get(), { 50.0f, 0.0f, -125.0f - ((i - float(groundNum_ - 3)) * 25.0f) });
+		ground_[i]->Initialize(groundRedModel_.get(), { -50.0f, 0.0f, -125.0f - ((i - float(groundNum_ - 3)) * 25.0f) });
 	}
 	
 	//moveGround_ = std::make_unique<MoveGround>();

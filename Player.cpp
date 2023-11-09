@@ -167,10 +167,14 @@ void Player::OnCollision(Collider* collider)
 		Restart();
 	}*/
 
-	if (collider->GetCollisionAttribute() & kCollisionAttributeGoal && reStart_ == false)
+	if (collider->GetCollisionAttribute() & kCollisionAttributeItem1 && reStart_ == false)
 	{
-		playerSpeed_ = 5.0f;
 		runSpeed_ = 5.0f;
+	}
+
+	if (collider->GetCollisionAttribute() & kCollisionAttributeItem2 && reStart_ == false)
+	{
+		behaviorDashTime_ = 50;
 	}
 }
 

@@ -73,6 +73,12 @@ void GamePlayScene::Initialize()
 	goal_[0]->Initialize(goalModel_.get(), { 50.0f, 1.0f, -200.0f });
 	goal_[1]->Initialize(goalModel_.get(), { -50.0f, 1.0f, -200.0f });
 
+	goal_[0]->SetCollisionAttribute(kCollisionAttributeItem1);
+	goal_[0]->SetCollisionMask(kCollisionMaskItem1);
+
+	goal_[1]->SetCollisionAttribute(kCollisionAttributeItem2);
+	goal_[1]->SetCollisionMask(kCollisionMaskItem2);
+
 	ground_[0]->Initialize(groundModel_.get(), { 0.0f,0.0f,0.0f });
 	ground_[0]->SetScale({ 10.0f, 1.0f, 10.0f });
 	ground_[1]->Initialize(groundModel_.get(), { 0.0f,30.0f,250.0f });

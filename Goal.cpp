@@ -9,8 +9,6 @@ void Goal::Initialize(Model* model, const Vector3& position)
 
 	worldTransform_.translation = position;
 
-	SetCollisionAttribute(kCollisionAttributeGoal);
-	SetCollisionMask(kCollisionMaskGoal);
 	SetCollisionPrimitive(kCollisionPrimitiveAABB);
 }
 

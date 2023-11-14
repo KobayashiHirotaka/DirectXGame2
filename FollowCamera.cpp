@@ -107,5 +107,6 @@ void FollowCamera::ApplyGlobalVariables()
 	const char* groupName = "FollowCamera";
 
 	offset = globalVariables->GetVector3Value(groupName, "Offset");
-	viewProjection_.rotation = globalVariables->GetVector3Value(groupName, "rotation");
+	viewProjection_.rotation.x = globalVariables->GetVector3Value(groupName, "rotation").x;
+	viewProjection_.rotation.z = globalVariables->GetVector3Value(groupName, "rotation").z;
 }

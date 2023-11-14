@@ -297,7 +297,10 @@ void Player::BehaviorDriftUpdate()
 		const float deadZone = 0.0f;
 
 		if (Input::GetInstance()->GetJoystickState(joyState_)) {
+			
 			rotationAmount_.x = (float)joyState_.Gamepad.sThumbLX / SHRT_MAX;
+			//if()
+
 		}
 		move_ = { rotationAmount_.x, 0.0f, rotationAmount_.z };
 

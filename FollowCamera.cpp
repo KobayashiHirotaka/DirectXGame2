@@ -43,7 +43,31 @@ void FollowCamera::Update()
 		{
 			Vector3 move = { 0.0f, 0.3f, 0.0f };
 
-			destinationAngleY_ += move.y * kRotSpeedY;
+			bool isRightStickRight = false;
+
+			bool isRightStickLeft = false;
+
+			float normalizedX = static_cast<float>(joyState_.Gamepad.sThumbLX) / SHRT_MAX;
+
+			float threshold = 0.2f;
+
+			if (normalizedX > threshold)
+			{
+				isRightStickRight = true;
+
+			}
+			else if (normalizedX < -threshold) {
+				isRightStickLeft = true;
+			}
+
+			if (isRightStickRight)
+			{
+				destinationAngleY_ += move.y * kRotSpeedY;
+
+			}
+			else if (isRightStickLeft) {
+				destinationAngleY_ -= move.y * kRotSpeedY;
+			}
 		}
 
 		if (Length(move) > deadZone)

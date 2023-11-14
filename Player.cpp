@@ -364,7 +364,31 @@ void Player::BehaviorDriftUpdate()
 {
 	float rotationSpeed = 0.01f;
 
-	worldTransform_.rotation.y += rotationSpeed;
+	bool isRightStickRight = false;
+
+	bool isRightStickLeft = false;
+
+	float normalizedX = static_cast<float>(joyState_.Gamepad.sThumbLX) / SHRT_MAX;
+
+	float threshold = 0.2f;
+
+	if (normalizedX > threshold)
+	{
+		isRightStickRight = true;
+
+	} else if (normalizedX < -threshold){
+		isRightStickLeft = true;
+	}
+
+	if (isRightStickRight)
+	{
+		worldTransform_.rotation.y += rotationSpeed;
+
+	} else if (isRightStickLeft) {
+		worldTransform_.rotation.y -= rotationSpeed;
+	}
+
+	//worldTransform_.rotation.y += rotationSpeed;
 
 	ImGui::Begin("speed");
 	ImGui::Text("%f", kSpeed);

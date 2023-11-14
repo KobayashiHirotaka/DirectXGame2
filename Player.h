@@ -41,13 +41,17 @@ public:
 
 	void BehaviorAttackUpdate();
 
-	void BehaviorDriftInitialize();
+	void BehaviorDashInitialize();
 
-	void BehaviorDriftUpdate();
+	void BehaviorDashUpdate();
 
 	void BehaviorJumpInitialize();
 
 	void BehaviorJumpUpdate();
+
+	void BehaviorDriftInitialize();
+
+	void BehaviorDriftUpdate();
 
 	Weapon* GetWeapon() { return weapon_.get(); };
 
@@ -56,8 +60,9 @@ private:
 	{
 		kRoot,
 		kAttack,
-		kDrift,
-		kJump
+		kDash,
+		kJump,
+		kDrift
 	};
 
 	struct WorkDash
@@ -82,11 +87,11 @@ private:
 
 	std::optional<Behavior> behaviorRequest_ = std::nullopt;
 
-	WorkDash workDrift_;
+	WorkDash workDash_;
 
 	std::unique_ptr<Weapon> weapon_ = nullptr;
 
-	uint32_t behaviorDashTime_ = 15;
+	uint32_t behaviorDashTime_ = 100;
 
 	Vector3 rotationAmount_;
 
@@ -96,7 +101,7 @@ private:
 
 	Vector3 velocity_ = {};
 
-	float runSpeed_ = 1.5f; // 速い走行速度（調整可能）
+	float runSpeed_ = 3.0f; // 速い走行速度（調整可能）
 
 	bool isHit_ = false;
 	bool preIsHit_ = false;

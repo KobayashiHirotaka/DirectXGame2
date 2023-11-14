@@ -103,6 +103,8 @@ private:
 
 	float runSpeed_ = 3.0f; // 速い走行速度（調整可能）
 
+	float kSpeed = 1.0f;
+
 	bool isHit_ = false;
 	bool preIsHit_ = false;
 

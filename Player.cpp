@@ -110,6 +110,12 @@ void Player::Update()
 		break;
 
 	case Behavior::kDrift:
+		kSpeed -= 0.005f;
+
+		if (kSpeed <= 0.01f)
+		{
+			kSpeed = 0.01f;
+		}
 		BehaviorDriftUpdate();
 		break;
 	}
@@ -280,6 +286,7 @@ void Player::BehaviorDashInitialize()
 	workDash_.dashParameter_ = 0;
 	workDash_.coolTime = 0;
 	worldTransform_.rotation.y = targetAngle_;
+	kSpeed = 1.0f;
 }
 
 void Player::BehaviorDashUpdate()
@@ -294,8 +301,6 @@ void Player::BehaviorDashUpdate()
 
 	if (input_->GetJoystickState(joyState_))
 	{
-		float kSpeed = 1.0f;
-	
 		move_ = {
 		rote.x,
 		0.0f,
@@ -352,19 +357,49 @@ void Player::BehaviorJumpUpdate()
 
 void Player::BehaviorDriftInitialize()
 {
-
+	kSpeed = 1.0f;
 }
 
 void Player::BehaviorDriftUpdate()
 {
-	float rotationSpeed = 0.005f;
+	float rotationSpeed = 0.01f;
 
 	worldTransform_.rotation.y += rotationSpeed;
+
+	ImGui::Begin("speed");
+	ImGui::Text("%f", kSpeed);
+	ImGui::End();
+
+	//移動量
+	Vector3 rote = {
+		(float)joyState_.Gamepad.sThumbLX / SHRT_MAX,
+		0.0f,
+		(float)joyState_.Gamepad.sThumbLY / SHRT_MAX,
+	};
+
+	if (input_->GetJoystickState(joyState_))
+	{
+		move_ = {
+		rote.x,
+		0.0f,
+		rote.z,
+		};
+
+		//移動量に速さを反映
+		move_ = Multiply(kSpeed, Normalize(move_));
+
+		//移動ベクトルをカメラの角度だけ回転する
+		Matrix4x4 rotateMatrix = MakeRotateYMatrix(viewProjection_->rotation.y);
+		move_ = TransformNormal(move_, rotateMatrix);
+
+		//移動
+		worldTransform_.translation = Add(worldTransform_.translation, move_);
+	}
 
 	if (!(joyState_.Gamepad.wButtons & XINPUT_GAMEPAD_Y))
 	{
 		workDash_.dashParameter_++;
-		float kSpeed = 1.0f;
+		float kSpeed = 3.0f;
 		//移動量
 		Vector3 move = {
 			(float)joyState_.Gamepad.sThumbLX / SHRT_MAX,

@@ -353,9 +353,6 @@
     <ClInclude Include="CollisionConfig.h">
       <Filter>ヘッダー ファイル\Engine\collision</Filter>
     </ClInclude>
-    <ClInclude Include="CollisionManager.h">
-      <Filter>ヘッダー ファイル\Engine\collision</Filter>
-    </ClInclude>
     <ClInclude Include="ConvertString.h">
       <Filter>ヘッダー ファイル\Engine\Utility</Filter>
     </ClInclude>
@@ -442,6 +439,9 @@
     </ClInclude>
     <ClInclude Include="Weapon.h">
       <Filter>ヘッダー ファイル\game\weapon</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionManager.h">
+      <Filter>ヘッダー ファイル\Engine\collision</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

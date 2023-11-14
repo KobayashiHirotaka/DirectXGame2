@@ -296,6 +296,9 @@ void Player::BehaviorDriftUpdate()
 		workDrift_.dashParameter_++;
 		const float deadZone = 0.0f;
 
+		if (Input::GetInstance()->GetJoystickState(joyState_)) {
+			rotationAmount_.x = (float)joyState_.Gamepad.sThumbLX / SHRT_MAX;
+		}
 		move_ = { rotationAmount_.x, 0.0f, rotationAmount_.z };
 
 		bool isMoving = false;

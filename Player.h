@@ -104,5 +104,6 @@ private:
 	bool reStart_ = false;
 
 	bool isDrifting = false;
+	bool isCD = false;
 };
 

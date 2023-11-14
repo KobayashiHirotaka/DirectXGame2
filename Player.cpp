@@ -284,25 +284,33 @@ void Player::BehaviorDashInitialize()
 
 void Player::BehaviorDashUpdate()
 {
+	//移動量
+	Vector3 rote = {
+		(float)joyState_.Gamepad.sThumbLX / SHRT_MAX,
+		0.0f,
+		(float)joyState_.Gamepad.sThumbLY / SHRT_MAX,
+	};
+
+
 	if (input_->GetJoystickState(joyState_))
 	{
 		float kSpeed = 1.0f;
-		//移動量
-		Vector3 move = {
-			(float)joyState_.Gamepad.sThumbLX / SHRT_MAX,
-			0.0f,
-			(float)joyState_.Gamepad.sThumbLY / SHRT_MAX,
+	
+		move_ = {
+		rote.x,
+		0.0f,
+		rote.z,
 		};
 
 		//移動量に速さを反映
-		move = Multiply(kSpeed, Normalize(move));
+		move_ = Multiply(kSpeed, Normalize(move_));
 
 		//移動ベクトルをカメラの角度だけ回転する
 		Matrix4x4 rotateMatrix = MakeRotateYMatrix(viewProjection_->rotation.y);
-		move = TransformNormal(move, rotateMatrix);
+		move_ = TransformNormal(move_, rotateMatrix);
 
 		//移動
-		worldTransform_.translation = Add(worldTransform_.translation, move);
+		worldTransform_.translation = Add(worldTransform_.translation, move_);
 
 		if (joyState_.Gamepad.wButtons & XINPUT_GAMEPAD_Y)
 		{
@@ -352,8 +360,6 @@ void Player::BehaviorDriftUpdate()
 	float rotationSpeed = 0.005f;
 
 	worldTransform_.rotation.y += rotationSpeed;
-	Vector3 rota = viewProjection_->rotation;
-	rota.y += rotationSpeed;
 
 	if (!(joyState_.Gamepad.wButtons & XINPUT_GAMEPAD_Y))
 	{

@@ -35,7 +35,16 @@ void FollowCamera::Update()
 
 		bool isMoving = false;
 
+		const float kRotSpeedY = 0.04f;
+
 		Vector3 move = { 0.0f, (float)joyState_.Gamepad.sThumbRX / SHRT_MAX, 0.0f };
+
+		if (joyState_.Gamepad.wButtons & XINPUT_GAMEPAD_Y)
+		{
+			Vector3 move = { 0.0f, 0.05f, 0.0f };
+
+			destinationAngleY_ += move.y * kRotSpeedY;
+		}
 
 		if (Length(move) > deadZone)
 		{
@@ -44,7 +53,6 @@ void FollowCamera::Update()
 
 		if (isMoving)
 		{
-			const float kRotSpeedY = 0.04f;
 
 			destinationAngleY_ += move.y * kRotSpeedY;
 		}

@@ -349,9 +349,11 @@ void Player::BehaviorDriftInitialize()
 
 void Player::BehaviorDriftUpdate()
 {
-	float rotationSpeed = 0.01f;
+	float rotationSpeed = 0.005f;
 
 	worldTransform_.rotation.y += rotationSpeed;
+	Vector3 rota = viewProjection_->rotation;
+	rota.y += rotationSpeed;
 
 	if (!(joyState_.Gamepad.wButtons & XINPUT_GAMEPAD_Y))
 	{

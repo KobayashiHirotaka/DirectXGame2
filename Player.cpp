@@ -110,7 +110,7 @@ void Player::Update()
 		break;
 
 	case Behavior::kDrift:
-		kSpeed -= 0.005f;
+		kSpeed -= 0.008f;
 
 		if (kSpeed <= 0.01f)
 		{

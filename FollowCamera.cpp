@@ -41,7 +41,7 @@ void FollowCamera::Update()
 
 		if (joyState_.Gamepad.wButtons & XINPUT_GAMEPAD_Y)
 		{
-			Vector3 move = { 0.0f, 0.15f, 0.0f };
+			Vector3 move = { 0.0f, 0.3f, 0.0f };
 
 			destinationAngleY_ += move.y * kRotSpeedY;
 		}
@@ -58,7 +58,7 @@ void FollowCamera::Update()
 		}
 	}
 
-	viewProjection_.rotation.y = LerpShortAngle(viewProjection_.rotation.y, destinationAngleY_, 0.1f);
+	viewProjection_.rotation.y = LerpShortAngle(viewProjection_.rotation.y, destinationAngleY_, 0.3f);
 
 	viewProjection_.UpdateViewMatrix();
 	viewProjection_.TransferMatrix();

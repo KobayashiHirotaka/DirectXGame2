@@ -8,7 +8,7 @@ void ICharacter::Initialize(const std::vector<Model*>& models)
 
 void ICharacter::Update()
 {
-	worldTransform_.UpdateMatrix();
+	worldTransform_.UpdateMatrix(RotationType::Euler);
 }
 
 void ICharacter::Draw(const ViewProjection& viewProjection)

@@ -24,7 +24,7 @@ void Ground::Initialize(Model* model, const Vector3& position)
 
 void Ground::Update()
 {
-	worldTransform_.UpdateMatrix();
+	worldTransform_.UpdateMatrix(RotationType::Euler);
 }
 
 void Ground::Draw(ViewProjection& viewProjection)

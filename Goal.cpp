@@ -14,7 +14,7 @@ void Goal::Initialize(Model* model, const Vector3& position)
 
 void Goal::Update()
 {
-	worldTransform_.UpdateMatrix();
+	worldTransform_.UpdateMatrix(RotationType::Euler);
 }
 
 void Goal::Draw(const ViewProjection& viewProjection)

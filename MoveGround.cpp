@@ -53,7 +53,7 @@ void MoveGround::Update()
 		}
 	}
 
-	worldTransform_.UpdateMatrix();
+	worldTransform_.UpdateMatrix(RotationType::Euler);
 }
 
 void MoveGround::Draw(ViewProjection& viewProjection)

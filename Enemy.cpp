@@ -78,12 +78,12 @@ void Enemy::Update()
 		break;
 	}
 
-	worldTransform_.UpdateMatrix();
+	worldTransform_.UpdateMatrix(RotationType::Euler);
 
-	worldTransformBody_.UpdateMatrix();
-	worldTransformHead_.UpdateMatrix();
-	worldTransformL_arm_.UpdateMatrix();
-	worldTransformR_arm_.UpdateMatrix();
+	worldTransformBody_.UpdateMatrix(RotationType::Euler);
+	worldTransformHead_.UpdateMatrix(RotationType::Euler);
+	worldTransformL_arm_.UpdateMatrix(RotationType::Euler);
+	worldTransformR_arm_.UpdateMatrix(RotationType::Euler);
 }
 
 void Enemy::Draw(const ViewProjection& viewProjection)

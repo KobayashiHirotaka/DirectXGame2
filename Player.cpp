@@ -131,7 +131,9 @@ void Player::Update()
 		worldTransform_.translation = { 0.0f,0.0f,0.0f };
 	}*/
 
-	ICharacter::Update();
+	worldTransform_.quaternion = Slerp(worldTransform_.quaternion, moveQuaternion_, 0.2f);
+	worldTransform_.quaternion = Normalize(worldTransform_.quaternion);
+	worldTransform_.UpdateMatrix(RotationType::Quaternion);
 
 	weapon_->Update();
 
@@ -203,7 +205,7 @@ Vector3 Player::GetWorldPosition()
 
 void Player::BehaviorRootInitialize()
 {
-	worldTransform_.Initialize();
+	
 }
 
 void Player::BehaviorRootUpdate()
@@ -239,33 +241,17 @@ void Player::BehaviorRootUpdate()
 		{
 			velocity_ = Multiply(playerSpeed_, Normalize(velocity_));
 
-			Matrix4x4 rotateMatrix = MakeRotateMatrix(viewProjection_->rotation);
-
+			Matrix4x4 rotateMatrix = MakeRotateYMatrix(viewProjection_->rotation.y);
 			velocity_ = TransformNormal(velocity_, rotateMatrix);
 
 			worldTransform_.translation = Add(worldTransform_.translation, velocity_);
 
-			if (velocity_.z == 0.0 && velocity_.x == 0.0)
-			{
-				targetAngle_ = 0.0;
-
-			}
-			else {
-				float dotProduct = velocity_.x;
-
-				float magnitude = std::sqrt(velocity_.x * velocity_.x + velocity_.z * velocity_.z);
-
-				targetAngle_ = std::acos(dotProduct / magnitude);
-
-				if (velocity_.z < 0)
-				{
-					targetAngle_ = -targetAngle_;
-				}
-			}
+			velocity_ = Normalize(velocity_);
+			Vector3 cross = Normalize(Cross({ 0.0f,0.0f,1.0f }, velocity_));
+			float dot = Dot({ 0.0f,0.0f,1.0f }, velocity_);
+			moveQuaternion_ = MakeRotateAxisAngleQuaternion(cross, std::acos(dot));
 		}
 	}
-
-	worldTransform_.rotation.y = LerpShortAngle(worldTransform_.rotation.y, targetAngle_, 0.1f);
 }
 
 void Player::BehaviorAttackInitialize()

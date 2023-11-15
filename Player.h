@@ -101,6 +101,8 @@ private:
 
 	Vector3 velocity_ = {};
 
+	Quaternion moveQuaternion_ = { 0.0f,0.0f,0.0f,1.0f };
+
 	float runSpeed_ = 3.0f; // 速い走行速度（調整可能）
 
 	float kSpeed = 1.0f;

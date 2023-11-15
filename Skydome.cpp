@@ -11,7 +11,7 @@ void Skydome::Initialize(Model* model)
 
 void Skydome::Updata()
 {
-	worldTransform_.UpdateMatrix();
+	worldTransform_.UpdateMatrix(RotationType::Euler);
 }
 
 void Skydome::Draw(ViewProjection& viewProjection)

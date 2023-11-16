@@ -239,9 +239,17 @@ void Player::BehaviorRootInitialize()
 
 void Player::BehaviorRootUpdate()
 {
+	if (workDash_.coolTime != 60)
+	{
+		workDash_.coolTime++;
+	}
+
 	if (joyState_.Gamepad.wButtons & XINPUT_GAMEPAD_B)
 	{
-		behaviorRequest_ = Behavior::kDash;
+		if (workDash_.coolTime == 60)
+		{
+			behaviorRequest_ = Behavior::kDash;
+		}
 	}
 
 	if (joyState_.Gamepad.wButtons & XINPUT_GAMEPAD_A)
@@ -378,6 +386,9 @@ void Player::BehaviorDriftInitialize()
 	isRightStickRight = false;
 
 	isRightStickLeft = false;
+
+	workDrift_.driftParameter_ = 0;
+	workDrift_.coolTime = 0;
 }
 
 void Player::BehaviorDriftUpdate()
@@ -422,8 +433,7 @@ void Player::BehaviorDriftUpdate()
 	if (!(joyState_.Gamepad.wButtons & XINPUT_GAMEPAD_Y) && isRightStickRight == true ||
 		!(joyState_.Gamepad.wButtons & XINPUT_GAMEPAD_Y) && isRightStickLeft == true)
 	{
-		workDash_.dashParameter_++;
-		float kSpeed = 3.0f;
+		float kSpeed = 1.5f;
 		//移動量
 		Vector3 move = {
 			(float)joyState_.Gamepad.sThumbLX / SHRT_MAX,
@@ -447,7 +457,7 @@ void Player::BehaviorDriftUpdate()
 		moveQuaternion_ = MakeRotateAxisAngleQuaternion(cross, std::acos(dot));
 	}
 
-	if (workDash_.dashParameter_ >= behaviorDashTime_)
+	if (++workDrift_.driftParameter_ >= behaviorDriftTime_)
 	{
 		behaviorRequest_ = Behavior::kRoot;
 	}

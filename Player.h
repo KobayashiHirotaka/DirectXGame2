@@ -10,6 +10,15 @@
 #include "Weapon.h"
 #include <optional>
 
+enum class Behavior
+	{
+		kRoot,
+		kAttack,
+		kDash,
+		kJump,
+		kDrift
+	};
+
 class Player : public Collider, public ICharacter
 {
 public:
@@ -55,19 +64,19 @@ public:
 
 	Weapon* GetWeapon() { return weapon_.get(); };
 
+	Behavior GetBehavior() const {return behavior_;}
+
 private:
-	enum class Behavior
-	{
-		kRoot,
-		kAttack,
-		kDash,
-		kJump,
-		kDrift
-	};
 
 	struct WorkDash
 	{
 		uint32_t dashParameter_= 0;
+		uint32_t coolTime = 0;
+	};
+
+	struct WorkDrift
+	{
+		uint32_t driftParameter_ = 0;
 		uint32_t coolTime = 0;
 	};
 
@@ -89,9 +98,13 @@ private:
 
 	WorkDash workDash_;
 
+	WorkDrift workDrift_;
+
 	std::unique_ptr<Weapon> weapon_ = nullptr;
 
 	uint32_t behaviorDashTime_ = 100;
+
+	uint32_t behaviorDriftTime_ = 100;
 
 	Vector3 rotationAmount_;
 

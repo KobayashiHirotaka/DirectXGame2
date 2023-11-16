@@ -39,9 +39,9 @@ void FollowCamera::Update()
 
 		Vector3 move = { 0.0f, (float)joyState_.Gamepad.sThumbRX / SHRT_MAX, 0.0f };
 
-	/*	if (joyState_.Gamepad.wButtons & XINPUT_GAMEPAD_Y)
+		if ((joyState_.Gamepad.wButtons & XINPUT_GAMEPAD_Y))
 		{
-			Vector3 move = { 0.0f, 0.3f, 0.0f };
+			Vector3 move = { 0.0f, 0.5f, 0.0f };
 
 			bool isRightStickRight = false;
 
@@ -68,7 +68,7 @@ void FollowCamera::Update()
 			else if (isRightStickLeft) {
 				destinationAngleY_ -= move.y * kRotSpeedY;
 			}
-		}*/
+		}
 
 		if (Length(move) > deadZone)
 		{

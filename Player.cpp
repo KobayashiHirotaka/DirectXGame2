@@ -68,8 +68,18 @@ void Player::Update()
 		isRightStickRight = true;
 
 	}
-	else if (normalizedX < -threshold) {
+	else {
+		isRightStickRight = false;
+	}
+
+
+	if (normalizedX < -threshold)
+	{
 		isRightStickLeft = true;
+
+	}
+	else {
+		isRightStickLeft = false;
 	}
 
 	if (behaviorRequest_)
@@ -134,8 +144,8 @@ void Player::Update()
 			}
 
 		}
-		
 		BehaviorDriftUpdate();
+
 		break;
 	}
 
@@ -364,6 +374,10 @@ void Player::BehaviorJumpUpdate()
 void Player::BehaviorDriftInitialize()
 {
 	kSpeed = 1.0f;
+
+	isRightStickRight = false;
+
+	isRightStickLeft = false;
 }
 
 void Player::BehaviorDriftUpdate()
@@ -374,8 +388,6 @@ void Player::BehaviorDriftUpdate()
 	} else if (isRightStickLeft) {
 		moveQuaternion_.y -= rotationSpeed;
 	}
-
-	//worldTransform_.rotation.y += rotationSpeed;
 
 	ImGui::Begin("speed");
 	ImGui::Text("%f", kSpeed);

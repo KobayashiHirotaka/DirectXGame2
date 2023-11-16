@@ -40,7 +40,7 @@ private:
 
 	Vector3 interTarget_{};
 
-	Vector3 offset = { 0.0f, 2.0f, -25.0f };
+	Vector3 offset = { 0.0f, 2.0f, -60.0f };
 
 	float destinationAngleY_ = 0.0f;
 

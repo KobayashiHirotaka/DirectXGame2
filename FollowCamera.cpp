@@ -7,6 +7,8 @@ void FollowCamera::Initialize()
 
 	viewProjection_.Initialize();
 
+	viewProjection_.rotation.x = 0.26f;
+
 	GlobalVariables* globalVariables{};
 	globalVariables = GlobalVariables::GetInstance();
 

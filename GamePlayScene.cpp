@@ -146,6 +146,7 @@ void GamePlayScene::Update()
 	else {
 		viewProjection_.UpdateMatrix();
 
+		followCamera_->SetStickFixed(player_->GetStickRightFixed(), player_->GetStickLeftFixed());
 		followCamera_->Update();
 		viewProjection_ = followCamera_->GetViewProjection();
 	}

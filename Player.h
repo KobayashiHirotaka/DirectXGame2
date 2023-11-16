@@ -64,7 +64,13 @@ public:
 
 	Weapon* GetWeapon() { return weapon_.get(); };
 
-	Behavior GetBehavior() const {return behavior_;}
+	bool GetStickRightFixed(){
+		return stickRightFixed_;
+	}
+
+	bool GetStickLeftFixed() {
+		return stickLeftFixed_;
+	}
 
 private:
 
@@ -131,8 +137,9 @@ private:
 	bool isCD = false;
 
 	bool isRightStickRight = false;
-
 	bool isRightStickLeft = false;
+	bool stickRightFixed_ = false;
+	bool stickLeftFixed_ = false;
 
 };
 

@@ -1,4 +1,5 @@
 #include "Mymath.h"
+#include <ranges>
 
 //X軸回転行列
 Matrix4x4 MakeRotateXMatrix(float radian)

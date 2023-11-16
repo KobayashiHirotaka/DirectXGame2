@@ -234,7 +234,8 @@ Vector3 Player::GetWorldPosition()
 
 void Player::BehaviorRootInitialize()
 {
-	
+	stickLeftFixed_ = false;
+	stickRightFixed_ = false;
 }
 
 void Player::BehaviorRootUpdate()
@@ -310,6 +311,9 @@ void Player::BehaviorDashInitialize()
 	workDash_.coolTime = 0;
 	worldTransform_.rotation.y = targetAngle_;
 	kSpeed = 1.0f;
+
+	stickLeftFixed_ = false;
+	stickRightFixed_ = false;
 }
 
 void Player::BehaviorDashUpdate()
@@ -383,6 +387,9 @@ void Player::BehaviorDriftInitialize()
 {
 	kSpeed = 1.0f;
 
+	stickLeftFixed_ = isRightStickLeft;
+	stickRightFixed_ = isRightStickRight;
+
 	isRightStickRight = false;
 
 	isRightStickLeft = false;
@@ -393,13 +400,34 @@ void Player::BehaviorDriftInitialize()
 
 void Player::BehaviorDriftUpdate()
 {
+	float angle = (float)joyState_.Gamepad.sThumbLX / 390.0f * 3.14159265359f / 180.0f;
 	if (isRightStickRight)
 	{
-		moveQuaternion_.y += rotationSpeed;
-	} else if (isRightStickLeft) {
-		moveQuaternion_.y -= rotationSpeed;
+		//moveQuaternion_.y += rotationSpeed;
+		if (angle < 0.0f) {
+			angle = 0.0f;
+		}
+
+	}
+	else if (isRightStickLeft) {
+		//moveQuaternion_.y -= rotationSpeed;
+		if (angle > 0.0f) {
+			angle = 0.0f;
+		}
 	}
 
+	if (stickRightFixed_) {
+		if (angle < 0.0f) {
+			angle = 0.0f;
+		}
+	}
+	else if (stickLeftFixed_) {
+		if (angle > 0.0f) {
+			angle = 0.0f;
+		}
+	}
+
+	moveQuaternion_.y = angle;
 	ImGui::Begin("speed");
 	ImGui::Text("%f", kSpeed);
 	ImGui::End();

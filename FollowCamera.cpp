@@ -39,7 +39,7 @@ void FollowCamera::Update()
 
 		Vector3 move = { 0.0f, (float)joyState_.Gamepad.sThumbRX / SHRT_MAX, 0.0f };
 
-		if ((joyState_.Gamepad.wButtons & XINPUT_GAMEPAD_Y))
+		if (joyState_.Gamepad.wButtons & XINPUT_GAMEPAD_Y && (stickRightFixed_ || stickLeftFixed_))
 		{
 			Vector3 move = { 0.0f, 0.5f, 0.0f };
 
@@ -49,7 +49,7 @@ void FollowCamera::Update()
 
 			float normalizedX = static_cast<float>(joyState_.Gamepad.sThumbLX) / SHRT_MAX;
 
-			float threshold = 0.5f;
+			float threshold = 0.0f;
 
 			if (normalizedX > threshold)
 			{
@@ -60,14 +60,31 @@ void FollowCamera::Update()
 				isRightStickLeft = true;
 			}
 
+			float angle = (float)joyState_.Gamepad.sThumbLX / 360.0f * 3.14159265359f / 180.0f;
+
 			if (isRightStickRight)
 			{
 				destinationAngleY_ += move.y * kRotSpeedY;
+				//destinationAngleY_ = (float)joyState_.Gamepad.sThumbLX / 450.0f * 3.14159265359f / 180.0f;
+
+				
+
 
 			}
 			else if (isRightStickLeft) {
 				destinationAngleY_ -= move.y * kRotSpeedY;
+				//destinationAngleY_ = (float)joyState_.Gamepad.sThumbLX / 540.0f * 3.14159265359f / 180.0f;
+
 			}
+
+			if (stickRightFixed_ && angle < 0.0f) {
+				angle = 0.0f;
+			}
+			else if (stickLeftFixed_ && angle > 0.0f) {
+				angle = 0.0f;
+			}
+
+			destinationAngleY_ = angle;
 		}
 
 		if (Length(move) > deadZone)

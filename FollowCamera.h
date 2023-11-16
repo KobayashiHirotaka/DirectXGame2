@@ -23,6 +23,11 @@ public:
 
 	void ApplyGlobalVariables();
 
+	void SetStickFixed(bool rightFixed, bool leftFixed) {
+		stickRightFixed_ = rightFixed;
+		stickLeftFixed_ = leftFixed;
+	};
+
 private:
 	WorldTransform worldTransform_;
 	const WorldTransform* target_ = nullptr;
@@ -38,5 +43,8 @@ private:
 	Vector3 offset = { 0.0f, 2.0f, -25.0f };
 
 	float destinationAngleY_ = 0.0f;
+
+	bool stickRightFixed_ = false;
+	bool stickLeftFixed_ = false;
 };
 

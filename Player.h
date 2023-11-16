@@ -83,6 +83,7 @@ private:
 	struct WorkDrift
 	{
 		uint32_t driftParameter_ = 0;
+		uint32_t driftChargeParameter_ = 0;
 		uint32_t coolTime = 0;
 	};
 
@@ -110,7 +111,9 @@ private:
 
 	uint32_t behaviorDashTime_ = 100;
 
-	uint32_t behaviorDriftTime_ = 100;
+	uint32_t behaviorDriftTime_ = 20;
+
+	uint32_t behaviorDriftChargeTime_ = 100;
 
 	Vector3 rotationAmount_;
 
@@ -121,6 +124,8 @@ private:
 	Vector3 velocity_ = {};
 
 	Quaternion moveQuaternion_ = { 0.0f,0.0f,0.0f,1.0f };
+
+	Vector3 moveDrift_;
 
 	float runSpeed_ = 3.0f; // 速い走行速度（調整可能）
 

@@ -395,6 +395,7 @@ void Player::BehaviorDriftInitialize()
 	isRightStickLeft = false;
 
 	workDrift_.driftParameter_ = 0;
+	workDrift_.driftChargeParameter_ = 0;
 	workDrift_.coolTime = 0;
 }
 
@@ -439,8 +440,9 @@ void Player::BehaviorDriftUpdate()
 		(float)joyState_.Gamepad.sThumbLY / SHRT_MAX,
 	};
 
-	if (input_->GetJoystickState(joyState_))
+	if (input_->GetJoystickState(joyState_) && isDrifting == false)
 	{
+		workDrift_.driftChargeParameter_++;
 		move_ = {
 		rote.x,
 		0.0f,
@@ -456,37 +458,50 @@ void Player::BehaviorDriftUpdate()
 
 		//移動
 		worldTransform_.translation = Add(worldTransform_.translation, move_);
-	}
 
-	if (!(joyState_.Gamepad.wButtons & XINPUT_GAMEPAD_Y) && isRightStickRight == true ||
-		!(joyState_.Gamepad.wButtons & XINPUT_GAMEPAD_Y) && isRightStickLeft == true)
-	{
-		float kSpeed = 1.5f;
-		//移動量
-		Vector3 move = {
+		rotationAmount_= {
 			(float)joyState_.Gamepad.sThumbLX / SHRT_MAX,
 			0.0f,
 			(float)joyState_.Gamepad.sThumbLY / SHRT_MAX,
 		};
 
+		if (!(joyState_.Gamepad.wButtons & XINPUT_GAMEPAD_Y) && isRightStickRight == true ||
+			!(joyState_.Gamepad.wButtons & XINPUT_GAMEPAD_Y) && isRightStickLeft == true)
+		{
+			isDrifting = true;
+		}
+	}
+
+	if (isDrifting)
+	{
+		workDrift_.driftParameter_++;
+		float kSpeed = 1.5f;
+		//移動量
+		moveDrift_ = {
+			rotationAmount_.x,
+			0.0f,
+			rotationAmount_.z,
+		};
+
 		//移動量に速さを反映
-		move = Multiply(kSpeed, Normalize(move));
+		moveDrift_ = Multiply(kSpeed, Normalize(moveDrift_));
 
 		//移動ベクトルをカメラの角度だけ回転する
 		Matrix4x4 rotateMatrix = MakeRotateYMatrix(viewProjection_->rotation.y);
-		move = TransformNormal(move, rotateMatrix);
+		moveDrift_ = TransformNormal(moveDrift_, rotateMatrix);
 
 		//移動
-		worldTransform_.translation = Add(worldTransform_.translation, move);
+		worldTransform_.translation = Add(worldTransform_.translation, moveDrift_);
 
-		move = Normalize(move);
-		Vector3 cross = Normalize(Cross({ 0.0f,0.0f,1.0f }, move));
-		float dot = Dot({ 0.0f,0.0f,1.0f }, move);
+		moveDrift_ = Normalize(moveDrift_);
+		Vector3 cross = Normalize(Cross({ 0.0f,0.0f,1.0f }, moveDrift_));
+		float dot = Dot({ 0.0f,0.0f,1.0f }, moveDrift_);
 		moveQuaternion_ = MakeRotateAxisAngleQuaternion(cross, std::acos(dot));
 	}
 
-	if (++workDrift_.driftParameter_ >= behaviorDriftTime_)
+	if (workDrift_.driftChargeParameter_ >= behaviorDriftChargeTime_ || workDrift_.driftParameter_ >= behaviorDriftTime_)
 	{
+		isDrifting = false;
 		behaviorRequest_ = Behavior::kRoot;
 	}
 }

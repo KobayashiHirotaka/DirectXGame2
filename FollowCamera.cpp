@@ -31,7 +31,7 @@ void FollowCamera::Update()
 
 	if (Input::GetInstance()->GetJoystickState(joyState_))
 	{
-		const float deadZone = 0.7f;
+		const float deadZone = 0.2f;
 
 		bool isMoving = false;
 
@@ -39,7 +39,7 @@ void FollowCamera::Update()
 
 		Vector3 move = { 0.0f, (float)joyState_.Gamepad.sThumbRX / SHRT_MAX, 0.0f };
 
-		if (joyState_.Gamepad.wButtons & XINPUT_GAMEPAD_Y)
+	/*	if (joyState_.Gamepad.wButtons & XINPUT_GAMEPAD_Y)
 		{
 			Vector3 move = { 0.0f, 0.3f, 0.0f };
 
@@ -49,7 +49,7 @@ void FollowCamera::Update()
 
 			float normalizedX = static_cast<float>(joyState_.Gamepad.sThumbLX) / SHRT_MAX;
 
-			float threshold = 0.2f;
+			float threshold = 0.5f;
 
 			if (normalizedX > threshold)
 			{
@@ -68,7 +68,7 @@ void FollowCamera::Update()
 			else if (isRightStickLeft) {
 				destinationAngleY_ -= move.y * kRotSpeedY;
 			}
-		}
+		}*/
 
 		if (Length(move) > deadZone)
 		{

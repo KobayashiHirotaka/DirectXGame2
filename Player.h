@@ -107,6 +107,8 @@ private:
 
 	float kSpeed = 1.0f;
 
+	float rotationSpeed = 0.01f;
+
 	bool isHit_ = false;
 	bool preIsHit_ = false;
 
@@ -114,5 +116,10 @@ private:
 
 	bool isDrifting = false;
 	bool isCD = false;
+
+	bool isRightStickRight = false;
+
+	bool isRightStickLeft = false;
+
 };
 

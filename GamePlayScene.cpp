@@ -44,7 +44,7 @@ void GamePlayScene::Initialize()
 
 	collisionManager_ = std::make_unique<CollisionManager>();
 
-	std::vector<Model*> playerModels = { playerModel_.get(),weaponModel_.get()};
+	std::vector<Model*> playerModels = { modelFighterHead_.get(),weaponModel_.get()};
 
 	std::vector<Model*> enemyModels = { modelFighterBody_.get(), modelFighterHead_.get(), modelFighterL_arm_.get(),
 		modelFighterR_arm_.get() };

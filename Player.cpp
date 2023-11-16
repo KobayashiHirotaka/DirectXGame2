@@ -59,6 +59,19 @@ void Player::Update()
 		return;
 	}
 
+	float normalizedX = static_cast<float>(joyState_.Gamepad.sThumbLX) / SHRT_MAX;
+
+	float threshold = 0.5f;
+
+	if (normalizedX > threshold)
+	{
+		isRightStickRight = true;
+
+	}
+	else if (normalizedX < -threshold) {
+		isRightStickLeft = true;
+	}
+
 	if (behaviorRequest_)
 	{
 		behavior_ = behaviorRequest_.value();
@@ -110,12 +123,18 @@ void Player::Update()
 		break;
 
 	case Behavior::kDrift:
-		kSpeed -= 0.008f;
-
-		if (kSpeed <= 0.01f)
+		if ((joyState_.Gamepad.wButtons & XINPUT_GAMEPAD_Y) && isRightStickRight == true ||
+			(joyState_.Gamepad.wButtons & XINPUT_GAMEPAD_Y) && isRightStickLeft == true)
 		{
-			kSpeed = 0.01f;
+			kSpeed -= 0.008f;
+
+			if (kSpeed <= 0.01f)
+			{
+				kSpeed = 0.01f;
+			}
+
 		}
+		
 		BehaviorDriftUpdate();
 		break;
 	}
@@ -303,7 +322,8 @@ void Player::BehaviorDashUpdate()
 		//移動
 		worldTransform_.translation = Add(worldTransform_.translation, move_);
 
-		if (joyState_.Gamepad.wButtons & XINPUT_GAMEPAD_Y)
+		if((joyState_.Gamepad.wButtons & XINPUT_GAMEPAD_Y) && isRightStickRight == true ||
+			(joyState_.Gamepad.wButtons & XINPUT_GAMEPAD_Y) && isRightStickLeft == true)
 		{
 			behaviorRequest_ = Behavior::kDrift;
 		}
@@ -348,30 +368,11 @@ void Player::BehaviorDriftInitialize()
 
 void Player::BehaviorDriftUpdate()
 {
-	float rotationSpeed = 0.01f;
-
-	bool isRightStickRight = false;
-
-	bool isRightStickLeft = false;
-
-	float normalizedX = static_cast<float>(joyState_.Gamepad.sThumbLX) / SHRT_MAX;
-
-	float threshold = 0.2f;
-
-	if (normalizedX > threshold)
-	{
-		isRightStickRight = true;
-
-	} else if (normalizedX < -threshold){
-		isRightStickLeft = true;
-	}
-
 	if (isRightStickRight)
 	{
-		worldTransform_.rotation.y += rotationSpeed;
-
+		moveQuaternion_.y += rotationSpeed;
 	} else if (isRightStickLeft) {
-		worldTransform_.rotation.y -= rotationSpeed;
+		moveQuaternion_.y -= rotationSpeed;
 	}
 
 	//worldTransform_.rotation.y += rotationSpeed;
@@ -406,7 +407,8 @@ void Player::BehaviorDriftUpdate()
 		worldTransform_.translation = Add(worldTransform_.translation, move_);
 	}
 
-	if (!(joyState_.Gamepad.wButtons & XINPUT_GAMEPAD_Y))
+	if (!(joyState_.Gamepad.wButtons & XINPUT_GAMEPAD_Y) && isRightStickRight == true ||
+		!(joyState_.Gamepad.wButtons & XINPUT_GAMEPAD_Y) && isRightStickLeft == true)
 	{
 		workDash_.dashParameter_++;
 		float kSpeed = 3.0f;
@@ -426,6 +428,11 @@ void Player::BehaviorDriftUpdate()
 
 		//移動
 		worldTransform_.translation = Add(worldTransform_.translation, move);
+
+		move = Normalize(move);
+		Vector3 cross = Normalize(Cross({ 0.0f,0.0f,1.0f }, move));
+		float dot = Dot({ 0.0f,0.0f,1.0f }, move);
+		moveQuaternion_ = MakeRotateAxisAngleQuaternion(cross, std::acos(dot));
 	}
 
 	if (workDash_.dashParameter_ >= behaviorDashTime_)
